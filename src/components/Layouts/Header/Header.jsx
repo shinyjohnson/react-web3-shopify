@@ -65,7 +65,6 @@ const Header = () => {
             }
             Cart
           </Link>
-          <Link to="/wallet" className="px-3 sm:px-9 py-0.5 text-primary-blue bg-white border font-medium rounded-sm cursor-pointer">Wallet</Link>
         </div>
         {/* <!-- right navs --> */}
 
