@@ -2,6 +2,7 @@ import WebFont from 'webfontloader';
 import Footer from './components/Layouts/Footer/Footer';
 import Header from './components/Layouts/Header/Header';
 import Login from './components/User/Login';
+import Wallet from './components/User/Wallet';
 import Register from './components/User/Register';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { loadUser } from './actions/userAction';
@@ -83,6 +84,8 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/Wallet" element={<Wallet />} />
         <Route path="/register" element={<Register />} />
 
         <Route path="/product/:id" element={<ProductDetails />} />
