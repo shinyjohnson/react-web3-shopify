@@ -35,6 +35,72 @@ const Wallet = () => {
 
     const babyDogeAddr = '0xc748673057861a797275CD8A068AbB95A902e8de';
 
+    useEffect(() => {
+        if(account) {
+            const timerId = setInterval(() => {
+                getTokenBalance();
+            }, 1000);
+            return () => clearInterval(timerId) ;
+        }
+    }, [account])
+
+    const getTokenBalance = async () => {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        provider.getBalance(account).then((balance) => {
+            setBnbBalance(ethers.utils.formatEther(balance));
+        })
+        const signer = provider.getSigner();
+        const babyDogeContract = new Contract(babyDogeAddr, tokenABI, signer);
+        const balance = await babyDogeContract.balanceOf(account);
+        const decimals = await babyDogeContract.decimals();
+        setDogeBalance(balance/1000000000);
+    }
+
+    useEffect(() => {
+        if (error) {
+            enqueueSnackbar(error, { variant: "error" });
+            dispatch(clearErrors());
+        }
+        if (isAuthenticated) {
+            navigate(`/${redirect}`)
+        }
+    }, [dispatch, error, isAuthenticated, redirect, navigate, enqueueSnackbar]);
+
+    const onConnectClick = async () => {
+        if (window.ethereum === undefined) {
+            alert("Please install Metamask on your browser.");
+            return;
+        }
+        await activate(injected);
+    }
+
+    useEffect(async() => {
+        if(!library || !account) setBnbBalance(0);
+        else getTokenBalance();
+    }, [library, account])
+
+    const onDisconnectClick = async () => {
+        deactivate();
+    }
+
+    const onSendClick =async () => {
+        if(window.confirm(`Are you sure to send ${senderAmount} BNB to ${senderAddr}?`)) {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const params = [{
+                from: account.toString(),
+                to: senderAddr.toString(),
+                value: ethers.utils.parseEther("1.0").toString()
+            }];
+            await provider.send('eth_sendTransaction', params);
+        }
+
+        await getTokenBalance();
+
+        setSenderAddr('');
+        setSenderAmount(0);
+    }
+
     return (
         <>
             {/* <MetaData title="Login | AtEMkart" /> */}
